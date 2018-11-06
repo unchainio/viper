@@ -202,6 +202,7 @@ type Viper struct {
 	properties *properties.Properties
 
 	onConfigChange func(fsnotify.Event)
+	caseSensitive  bool
 }
 
 // New returns an initialized Viper instance.
@@ -218,6 +219,7 @@ func New() *Viper {
 	v.env = make(map[string]string)
 	v.aliases = make(map[string]string)
 	v.typeByDefValue = false
+	v.caseSensitive = false
 
 	return v
 }
@@ -274,6 +276,13 @@ var SupportedRemoteProviders = []string{"etcd", "consul"}
 func OnConfigChange(run func(in fsnotify.Event)) { v.OnConfigChange(run) }
 func (v *Viper) OnConfigChange(run func(in fsnotify.Event)) {
 	v.onConfigChange = run
+}
+
+func SetCaseSensitive(flag bool) {
+	v.SetCaseSensitive(flag)
+}
+func (v *Viper) SetCaseSensitive(flag bool) {
+	v.caseSensitive = flag
 }
 
 func WatchConfig() { v.WatchConfig() }
@@ -1374,6 +1383,10 @@ func (v *Viper) unmarshalReader(in io.Reader, c map[string]interface{}) error {
 		}
 	}
 
+	if v.caseSensitive {
+		return nil
+	}
+
 	insensitiviseMap(c)
 	return nil
 }
@@ -1553,6 +1566,10 @@ func (v *Viper) WatchRemoteConfigOnChannel() error {
 }
 
 func (v *Viper) insensitiviseMaps() {
+	if v.caseSensitive {
+		return
+	}
+
 	insensitiviseMap(v.config)
 	insensitiviseMap(v.defaults)
 	insensitiviseMap(v.override)
