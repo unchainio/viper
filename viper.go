@@ -35,7 +35,7 @@ import (
 
 	yaml "gopkg.in/yaml.v2"
 
-	toml "github.com/burntsushi/toml"
+	toml "github.com/BurntSushi/toml"
 	"github.com/fsnotify/fsnotify"
 	"github.com/hashicorp/hcl"
 	"github.com/hashicorp/hcl/hcl/printer"
